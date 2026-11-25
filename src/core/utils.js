@@ -21,16 +21,10 @@ export function cssText(value) {
 }
 
 
-// Karlun permits ur ↔ er spelling variation unless an entry records an exception.
+// Answers use only the approved spelling and explicitly listed aliases.
 export function getAcceptedSpellings(word) {
-  const values = [word?.term, ...(word?.aliases ?? [])].filter(Boolean).map((value) => String(value).trim());
-  if (word?.spellingVariant !== false) {
-    for (const value of [...values]) {
-      if (/(?:ur|er)/i.test(value)) {
-        const alternate = value.replace(/ur|er/gi, (match) => match.toLowerCase() === "ur" ? "er" : "ur");
-        values.push(alternate);
-      }
-    }
-  }
+  const values = [word?.term, ...(word?.aliases ?? [])]
+    .filter(Boolean)
+    .map((value) => String(value).trim());
   return [...new Set(values)];
 }
