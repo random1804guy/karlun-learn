@@ -21,6 +21,71 @@ export function createDefaultState() {
   };
 }
 
+const normaliseTerm = (value) => String(value ?? "").trim().toLocaleLowerCase("en-GB");
+
+function migrateLearnerProgress(oldCourse, learner, currentCourse) {
+  const oldWords = new Map((oldCourse?.words ?? []).map((word) => [normaliseTerm(word.term), word]));
+  const progress = {};
+  const mappedMeanings = new Map();
+
+  for (const currentWord of currentCourse.words) {
+    const oldWord = oldWords.get(normaliseTerm(currentWord.term));
+    if (!oldWord) continue;
+    for (const currentMeaning of currentWord.meanings) {
+      const oldMeaning = (oldWord.meanings ?? []).find((meaning) => normaliseTerm(meaning.text) === normaliseTerm(currentMeaning.text));
+      if (!oldMeaning) continue;
+      const oldKey = oldWord.id + ":" + oldMeaning.id;
+      const newKey = currentWord.id + ":" + currentMeaning.id;
+      mappedMeanings.set(oldKey, {
+        wordId: currentWord.id,
+        meaningId: currentMeaning.id,
+        text: currentMeaning.text,
+        newKey
+      });
+      const previousProgress = learner.wordProgress?.[oldKey];
+      if (previousProgress) progress[newKey] = structuredClone(previousProgress);
+    }
+  }
+
+  learner.wordProgress = progress;
+  learner.mistakes = (learner.mistakes ?? []).flatMap((mistake) => {
+    const mapped = mappedMeanings.get(mistake.wordId + ":" + mistake.meaningId);
+    if (!mapped) return [];
+    return [{
+      ...mistake,
+      wordId: mapped.wordId,
+      meaningId: mapped.meaningId,
+      expected: mapped.text
+    }];
+  });
+  return learner;
+}
+
+export function migrateCourseAndLearner(savedCourse, savedLearner) {
+  const defaults = structuredClone(INITIAL_COURSE);
+  const learner = structuredClone(savedLearner ?? createLearner(DEFAULT_CONFIG.progression.startingHearts));
+  const isCurrentMasterSheet = savedCourse?.masterSheetVersion === defaults.masterSheetVersion;
+
+  if (!isCurrentMasterSheet) {
+    migrateLearnerProgress(savedCourse, learner, defaults);
+    return { course: defaults, learner };
+  }
+
+  const course = {
+    ...defaults,
+    ...savedCourse,
+    words: structuredClone(savedCourse.words ?? defaults.words),
+    units: structuredClone(defaults.units),
+    grammar: structuredClone(defaults.grammar),
+    languageNotes: structuredClone(defaults.languageNotes),
+    principles: structuredClone(defaults.principles),
+    examples: structuredClone(defaults.examples),
+    archivedWords: structuredClone(savedCourse.archivedWords ?? defaults.archivedWords),
+    importHistory: structuredClone(savedCourse.importHistory ?? defaults.importHistory)
+  };
+  return { course, learner };
+}
+
 function openDatabase() {
   if (!("indexedDB" in globalThis)) return Promise.resolve(null);
   if (dbPromise) return dbPromise;
@@ -118,27 +183,20 @@ export async function loadState() {
     else if (indexed.available) persistenceMode = "indexeddb";
   }
   if (!saved || typeof saved !== "object") return createDefaultState();
+
   const defaults = createDefaultState();
+  const migrated = migrateCourseAndLearner(saved.course, saved.learner);
   return {
     ...defaults,
     ...saved,
-    course: {
-      ...defaults.course,
-      ...(saved.course ?? {}),
-      archivedWords: saved.course?.archivedWords ?? defaults.course.archivedWords,
-      importHistory: saved.course?.importHistory ?? defaults.course.importHistory,
-      grammar: structuredClone(defaults.course.grammar),
-      examples: saved.course?.examples ?? defaults.course.examples,
-      units: saved.course?.units ?? defaults.course.units,
-      words: saved.course?.words ?? defaults.course.words
-    },
+    course: migrated.course,
     learner: {
       ...defaults.learner,
-      ...(saved.learner ?? {}),
-      wordProgress: saved.learner?.wordProgress ?? {},
-      mistakes: saved.learner?.mistakes ?? [],
-      lessonHistory: saved.learner?.lessonHistory ?? [],
-      achievements: saved.learner?.achievements ?? []
+      ...migrated.learner,
+      wordProgress: migrated.learner.wordProgress ?? {},
+      mistakes: migrated.learner.mistakes ?? [],
+      lessonHistory: migrated.learner.lessonHistory ?? [],
+      achievements: migrated.learner.achievements ?? []
     },
     settings: { ...defaults.settings, ...(saved.settings ?? {}) },
     config: validateConfig(saved.config ?? defaults.config)
@@ -146,14 +204,7 @@ export async function loadState() {
 }
 
 export async function saveState(state) {
-  const snapshot = {
-    ...state,
-    course: {
-      ...state.course,
-      grammar: structuredClone(INITIAL_COURSE.grammar)
-    },
-    savedAt: new Date().toISOString()
-  };
+  const snapshot = { ...state, savedAt: new Date().toISOString() };
   const saved = await writeIndexed(snapshot);
   if (saved) persistenceMode = "indexeddb";
   else if (!writeFallback(snapshot)) throw new Error("Your browser could not save data. Export a backup before continuing.");
