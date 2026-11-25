@@ -82,7 +82,6 @@ function entryForWord(entry, existing) {
     wordClass: previous?.wordClass ?? "flexible",
     modifierCompatibility: previous?.modifierCompatibility ?? { sa: "unspecified", ne: "unspecified" },
     pluralCompatibility: previous?.pluralCompatibility ?? "unspecified",
-    spellingVariant: previous?.spellingVariant ?? true,
     status: "approved",
     sourceVersion: new Date().toISOString().slice(0, 10)
   };
