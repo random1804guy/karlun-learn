@@ -127,7 +127,7 @@ export async function loadState() {
       ...(saved.course ?? {}),
       archivedWords: saved.course?.archivedWords ?? defaults.course.archivedWords,
       importHistory: saved.course?.importHistory ?? defaults.course.importHistory,
-      grammar: saved.course?.grammar ?? defaults.course.grammar,
+      grammar: structuredClone(defaults.course.grammar),
       examples: saved.course?.examples ?? defaults.course.examples,
       units: saved.course?.units ?? defaults.course.units,
       words: saved.course?.words ?? defaults.course.words
@@ -146,7 +146,14 @@ export async function loadState() {
 }
 
 export async function saveState(state) {
-  const snapshot = { ...state, savedAt: new Date().toISOString() };
+  const snapshot = {
+    ...state,
+    course: {
+      ...state.course,
+      grammar: structuredClone(INITIAL_COURSE.grammar)
+    },
+    savedAt: new Date().toISOString()
+  };
   const saved = await writeIndexed(snapshot);
   if (saved) persistenceMode = "indexeddb";
   else if (!writeFallback(snapshot)) throw new Error("Your browser could not save data. Export a backup before continuing.");
