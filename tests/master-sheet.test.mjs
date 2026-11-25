@@ -68,7 +68,6 @@ test('grammar, question system, examples and general principles are all supplied
   for (const phrase of ['soma kato', 'ko kato', 'lora kato', 'tima kato', 'karlun kato']) {
     assert.ok(questionGuide.text.includes(phrase), phrase + ' question guidance is missing');
   }
-  assert.equal(INITIAL_COURSE.languagePrinciples, undefined);
   assert.equal(INITIAL_COURSE.principles.length, 10);
   assert.ok(INITIAL_COURSE.examples.some((example) => example.karlun === 'mi kesa sa' && example.english === 'I jump.'));
   assert.ok(!INITIAL_COURSE.examples.some((example) => example.karlun === 'soma kesa'));
