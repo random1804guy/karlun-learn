@@ -1,106 +1,127 @@
-// Official Karlun snapshot supplied by Huw. Do not invent or auto-derive words here.
+// Official Karlun content from Huw's current Master Sheet. Do not add unapproved words or rules.
 const meanings = (wordId, items) => items.map((text, index) => ({
-  id: `${wordId}-m${index + 1}`,
+  id: wordId + "-m" + (index + 1),
   text,
   order: index + 1,
   status: "approved"
 }));
 
-const word = (id, term, glosses, unit, options = {}) => ({
-  id,
-  term,
-  aliases: options.aliases ?? [],
-  meanings: meanings(id, glosses),
-  unitId: unit,
-  notes: options.notes ?? "",
-  wordClass: "flexible",
-  modifierCompatibility: { sa: "unspecified", ne: "unspecified" },
-  pluralCompatibility: "unspecified",
-  spellingVariant: options.spellingVariant ?? true,
-  status: "approved",
-  sourceVersion: "2026-11-05"
-});
+const word = (term, glosses, unit, notes = "") => {
+  const id = "w-" + term;
+  return {
+    id,
+    term,
+    aliases: [],
+    meanings: meanings(id, glosses),
+    unitId: unit,
+    notes,
+    wordClass: "flexible",
+    modifierCompatibility: { sa: "unspecified", ne: "unspecified" },
+    pluralCompatibility: "unspecified",
+    spellingVariant: false,
+    status: "approved",
+    sourceVersion: "2026-11-25"
+  };
+};
 
 export const INITIAL_WORDS = [
-  word("w-sa", "sa", ["yes", "really good", "very positive", "right", "correct", "up"], "foundations"),
-  word("w-sata", "sata", ["okay", "fairly good", "acceptable", "slightly positive"], "foundations"),
-  word("w-ta", "ta", ["maybe", "neutral", "normal", "middle"], "foundations", { notes: "Not a productive meaning modifier." }),
-  word("w-neta", "neta", ["fairly bad", "poor-ish", "slightly negative"], "foundations"),
-  word("w-ne", "ne", ["no", "really bad", "very negative", "wrong", "down"], "foundations"),
+  // 1. Core Polarity
+  word("sa", ["yes", "really good", "very positive", "right", "correct", "up"], "core-polarity"),
+  word("sata", ["okay", "fairly good", "acceptable", "slightly positive"], "core-polarity"),
+  word("ta", ["maybe", "neutral", "normal", "middle"], "core-polarity"),
+  word("neta", ["fairly bad", "poor-ish", "slightly negative"], "core-polarity", "Mildly negative. It is not as strongly negative as ne."),
+  word("ne", ["no", "really bad", "very negative", "wrong", "down"], "core-polarity", "Strongly negative. neta is only mildly negative."),
 
-  word("w-salo", "salo", ["hello", "greeting"], "social"),
-  word("w-nero", "nero", ["goodbye", "farewell", "leaving"], "social"),
-  word("w-mara", "mara", ["thanks", "gratitude", "appreciation"], "social"),
-  word("w-lena", "lena", ["please", "polite request marker"], "social"),
-  word("w-sima", "sima", ["sorry", "excuse me", "pardon me"], "social"),
+  // 2. Social / Politeness
+  word("salo", ["hello", "greeting"], "social"),
+  word("nero", ["goodbye", "farewell", "leaving"], "social"),
+  word("mara", ["thanks", "gratitude", "appreciation"], "social"),
+  word("lena", ["please", "polite request marker"], "social", "Can be used broadly for polite requests."),
+  word("sima", ["sorry", "excuse me", "pardon me"], "social"),
 
-  word("w-kema", "kema", ["want", "need", "require", "desire", "seek", "request", "ask for", "can I have"], "actions"),
-  word("w-loma", "loma", ["have", "own", "possess", "hold", "keep", "retain", "carry"], "actions"),
-  word("w-kato", "kato", ["do", "make", "create", "act", "perform", "work", "carry out", "cause"], "actions"),
-  word("w-sopo", "sopo", ["say", "talk", "ask"], "actions"),
+  // 3. Wanting / Possession / Action
+  word("kema", ["want", "need", "require", "desire", "seek", "request", "ask for", "can I have"], "actions", "Can be used for a more direct request."),
+  word("loma", ["have", "own", "possess", "hold", "keep", "retain", "carry"], "actions"),
+  word("kesa", ["do", "make", "create", "act", "perform", "work", "carry out", "cause", "move"], "actions"),
 
-  word("w-sato", "sato", ["see", "visible", "clear", "transparent", "open", "unobstructed", "unblocked"], "seeing"),
-  word("w-nesato", "nesato", ["not see", "invisible", "blocked", "blurry", "opaque", "closed", "obstructed"], "seeing"),
+  // 4. Communication
+  word("sopa", ["say", "speak", "talk", "chat", "ask", "tell", "communicate", "converse", "discuss"], "communication", "Covers general communication, including asking questions."),
 
-  word("w-soma", "soma", ["person", "people", "someone", "anyone", "human"], "people"),
-  word("w-sako", "sako", ["good thing", "good stuff", "valuable", "worthwhile", "something worth keeping"], "people"),
-  word("w-neko", "neko", ["bad thing", "bad stuff", "poor thing", "waste", "trash", "something to get rid of"], "people"),
-  word("w-ko", "ko", ["it", "thing", "stuff"], "people"),
+  // 5. Vision
+  word("sato", ["see", "visible", "clear", "transparent", "open", "unobstructed", "unblocked"], "vision"),
+  word("nesato", ["not see", "invisible", "blocked", "blurry", "opaque", "closed", "obstructed"], "vision"),
 
-  word("w-dela", "dela", ["know", "understand", "knowledge", "smart", "intelligent", "aware", "knowledgeable"], "knowledge"),
-  word("w-nedela", "nedela", ["not know", "not understand", "confused", "unaware", "dumb", "ignorant"], "knowledge"),
+  // 6. People / Things / Value
+  word("soma", ["person", "people", "someone", "anyone", "human"], "people-things"),
+  word("sako", ["good thing", "good stuff", "valuable", "worthwhile", "something worth keeping"], "people-things"),
+  word("neko", ["bad thing", "bad stuff", "poor thing", "waste", "trash", "something to get rid of"], "people-things"),
+  word("ko", ["it", "thing", "stuff"], "people-things", "Also used as the pronoun for it."),
 
-  word("w-tora", "tora", ["enter", "move forwards", "travel", "go"], "movement"),
-  word("w-netora", "netora", ["backwards", "exit", "reverse", "stop"], "movement"),
+  // 7. Knowledge
+  word("dela", ["know", "understand", "knowledge", "smart", "intelligent", "aware", "knowledgeable"], "knowledge"),
+  word("nedela", ["not know", "not understand", "confused", "unaware", "dumb", "ignorant"], "knowledge"),
 
-  word("w-mi", "mi", ["I", "me"], "pronouns"),
-  word("w-mu", "mu", ["you"], "pronouns"),
-  word("w-mo", "mo", ["we", "us", "our"], "pronouns"),
-  word("w-re", "re", ["they", "them", "their"], "pronouns"),
-  word("w-le", "le", ["he", "him", "male", "boy"], "pronouns"),
-  word("w-la", "la", ["she", "her", "female", "girl"], "pronouns"),
+  // 8. Movement
+  word("tora", ["enter", "move forwards", "travel", "go"], "movement"),
+  word("netora", ["backwards", "exit", "reverse", "stop"], "movement"),
 
-  word("w-kesa", "kesa", ["how", "confused", "questioning"], "questions", { notes: "Concept + kesa can form a question, e.g. soma kesa = who?" }),
+  // 9. Pronouns
+  word("mi", ["I", "me"], "pronouns"),
+  word("mu", ["you"], "pronouns"),
+  word("mo", ["we", "us", "our"], "pronouns"),
+  word("re", ["they", "them", "their"], "pronouns"),
+  word("le", ["he", "him", "male", "boy"], "pronouns"),
+  word("la", ["she", "her", "female", "girl"], "pronouns"),
 
-  word("w-bera", "bera", ["because"], "connectors", { aliases: ["bura"] }),
-  word("w-bur", "bur", ["but"], "connectors", { aliases: ["ber"] }),
-  word("w-en", "en", ["and"], "connectors"),
-  word("w-ori", "ori", ["or"], "connectors"),
+  // 10. Questions
+  word("kato", ["confused", "questioning", "how"], "questions", "Combines with a concept to specify what is being questioned. See the Question System guide."),
 
-  word("w-tima", "tima", ["time", "when"], "time"),
-  word("w-naro", "naro", ["now"], "time"),
-  word("w-lora", "lora", ["location", "place", "where"], "time"),
-  word("w-nara", "nara", ["today"], "time"),
-  word("w-mosa", "mosa", ["tomorrow"], "time"),
-  word("w-mone", "mone", ["yesterday"], "time"),
-  word("w-sena", "sena", ["second"], "time"),
-  word("w-mena", "mena", ["minute"], "time"),
-  word("w-hora", "hora", ["hour"], "time"),
-  word("w-dana", "dana", ["day"], "time"),
-  word("w-mona", "mona", ["month"], "time"),
-  word("w-yara", "yara", ["year"], "time"),
+  // 11. Connectors
+  word("bera", ["because"], "connectors"),
+  word("bur", ["but"], "connectors"),
+  word("en", ["and"], "connectors"),
+  word("ori", ["or"], "connectors"),
 
-  word("w-pira", "pira", ["red"], "colours"),
-  word("w-galo", "galo", ["blue"], "colours"),
-  word("w-fema", "fema", ["green"], "colours"),
-  word("w-boda", "boda", ["yellow"], "colours"),
-  word("w-doka", "doka", ["black"], "colours"),
-  word("w-hopa", "hopa", ["white"], "colours")
+  // 12. Time / Location
+  word("tima", ["time"], "time-location"),
+  word("naro", ["now"], "time-location"),
+  word("lora", ["location", "place"], "time-location"),
+  word("tara", ["today"], "time-location"),
+  word("mosa", ["tomorrow"], "time-location"),
+  word("mone", ["yesterday"], "time-location"),
+
+  // 13. Time Units
+  word("sena", ["second"], "time-units"),
+  word("mena", ["minute"], "time-units"),
+  word("hora", ["hour"], "time-units"),
+  word("dana", ["day"], "time-units"),
+  word("mona", ["month"], "time-units"),
+  word("yara", ["year"], "time-units"),
+
+  // 14. Colours
+  word("rira", ["red"], "colours"),
+  word("balo", ["blue"], "colours"),
+  word("grogu", ["green"], "colours"),
+  word("yopa", ["yellow"], "colours"),
+  word("boka", ["black"], "colours"),
+  word("wopa", ["white"], "colours")
 ];
 
 export const INITIAL_UNITS = [
-  { id: "foundations", title: "The foundations", description: "The positive-to-negative scale", order: 1 },
-  { id: "social", title: "Social basics", description: "Greetings, manners and thanks", order: 2 },
-  { id: "actions", title: "Actions & communication", description: "Wanting, doing and saying", order: 3 },
-  { id: "seeing", title: "Seeing things", description: "Visibility and obstruction", order: 4 },
-  { id: "people", title: "People & things", description: "People, objects and value", order: 5 },
-  { id: "knowledge", title: "Knowledge", description: "Knowing and not knowing", order: 6 },
-  { id: "movement", title: "Movement", description: "Going, entering and reversing", order: 7 },
-  { id: "pronouns", title: "Pronouns", description: "Who is being talked about", order: 8 },
-  { id: "questions", title: "Questions", description: "Asking and understanding questions", order: 9 },
-  { id: "connectors", title: "Connecting ideas", description: "Because, but, and or", order: 10 },
-  { id: "time", title: "Time & places", description: "When and where", order: 11 },
-  { id: "colours", title: "Colours", description: "Six basic colour words", order: 12 }
+  { id: "core-polarity", title: "Core Polarity", description: "The positive-to-negative scale", order: 1 },
+  { id: "social", title: "Social / Politeness", description: "Greetings, manners and requests", order: 2 },
+  { id: "actions", title: "Wanting / Possession / Action", description: "Wanting, having and doing", order: 3 },
+  { id: "communication", title: "Communication", description: "Speaking, asking and telling", order: 4 },
+  { id: "vision", title: "Vision", description: "Seeing, visibility and obstruction", order: 5 },
+  { id: "people-things", title: "People / Things / Value", description: "People, things and value", order: 6 },
+  { id: "knowledge", title: "Knowledge", description: "Knowing and not knowing", order: 7 },
+  { id: "movement", title: "Movement", description: "Going, entering and reversing", order: 8 },
+  { id: "pronouns", title: "Pronouns", description: "People and pronouns", order: 9 },
+  { id: "questions", title: "Questions", description: "Questioning with kato", order: 10 },
+  { id: "connectors", title: "Connectors", description: "Because, but, and or", order: 11 },
+  { id: "time-location", title: "Time / Location", description: "Time and places", order: 12 },
+  { id: "time-units", title: "Time Units", description: "Seconds, minutes and larger units", order: 13 },
+  { id: "colours", title: "Colours", description: "Six basic colour words", order: 14 }
 ];
 
 export const INITIAL_GRAMMAR = [
@@ -114,7 +135,7 @@ export const INITIAL_GRAMMAR = [
   {
     id: "g-meaning-modifiers",
     title: "Meaning Modifiers",
-    text: "Only these are productive meaning modifiers: sa- = positive / stronger positive meaning; ne- = negative / opposite meaning. ta- is NOT a modifier. Examples: dela → nedela; sato → nesato.",
+    text: "Only these are productive meaning modifiers: sa- = Positive / stronger positive meaning; ne- = Negative / opposite meaning. ta- is NOT a modifier. Examples: dela → nedela; sato → nesato.",
     status: "approved",
     approved: true
   },
@@ -142,41 +163,86 @@ export const INITIAL_GRAMMAR = [
   {
     id: "g-capitalisation",
     title: "Capitalisation",
-    text: "The first word of a sentence can begin with either an uppercase or lowercase letter. Names and other proper nouns can use capital letters anywhere, including in the middle of a sentence. Ordinary words elsewhere in a sentence should use lowercase. Random capitalisation or mixed uppercase and lowercase letters within ordinary words is not valid. Valid: “Mi kesa sa”, “mi kesa sa”, “John kema chips”, “mi sopa John”. Invalid: “MI KesA sA”, “mi Kesa sa”, “mi kesa Sa”. Capitalisation does not change the meaning of a Karlun word.",
+    text: "The first word of a sentence can begin with either an uppercase or lowercase letter. Names and other proper nouns can use capital letters, even in the middle of a sentence. Ordinary words elsewhere in a sentence should use lowercase. Random capitalisation or mixed uppercase and lowercase letters within ordinary words is not valid. Valid: “Mi kesa sa”, “mi kesa sa”, “John kema chips”, “mi sopa John”. Invalid: “MI KesA sA”, “mi Kesa sa”, “mi kesa Sa”. Capitalisation does not change the meaning of a Karlun word.",
     status: "approved",
     approved: true
   },
   {
     id: "g-pronunciation",
     title: "Pronunciation",
-    text: "gu = ju. gue = ju (vibrate long).",
+    text: "gu - ju. gue - ju (vibrate long).",
     status: "approved",
     approved: true
   }
 ];
 
+export const INITIAL_LANGUAGE_NOTES = [
+  {
+    id: "note-polarity",
+    title: "Core Polarity",
+    text: "Polarity scale: sa → sata → ta → neta → ne. neta is mildly negative, whereas ne is strongly negative."
+  },
+  {
+    id: "note-social",
+    title: "Social / Politeness",
+    text: "lena can be used broadly for polite requests. kema can be used for a more direct request."
+  },
+  {
+    id: "note-communication",
+    title: "Communication",
+    text: "sopa covers general communication, including asking questions."
+  },
+  {
+    id: "note-pronouns",
+    title: "Pronouns",
+    text: "mo and re are separate pronouns. ko is also used for it / thing / stuff."
+  },
+  {
+    id: "note-questions",
+    title: "Question System",
+    text: "kato combines with a concept to specify what is being questioned: soma kato = Who?; ko kato = What?; lora kato = Where?; tima kato = When?; kato = How? “karlun kato” can be used when confused about Karlun or when someone does not understand a Karlun expression."
+  }
+];
+
+export const INITIAL_LANGUAGE_PRINCIPLES = [
+  "Grammar should remain simple and flexible.",
+  "English-style sentence order is the default.",
+  "Clear meaning is more important than rigid grammar.",
+  "Related meanings may share roots.",
+  "Not every word needs to be mechanically derived from another.",
+  "Spelling should generally be predictable.",
+  "Normal keyboard characters are preferred.",
+  "Words should be practical, memorable and comfortable to use.",
+  "Words should be tested in real sentences before being accepted.",
+  "Unapproved suggestions are not official vocabulary."
+];
+
 export const INITIAL_COURSE = {
   id: "karlun-main",
   name: "Karlun",
-  sourceVersion: "2026-11-05",
-  sourceDescription: "Huw's approved master plan snapshot",
+  masterSheetVersion: "2026-11-25",
+  sourceVersion: "2026-11-25",
+  sourceDescription: "Current Karlun Master Sheet supplied by Huw",
   words: INITIAL_WORDS,
   units: INITIAL_UNITS,
   grammar: INITIAL_GRAMMAR,
+  languageNotes: INITIAL_LANGUAGE_NOTES,
+  principles: INITIAL_LANGUAGE_PRINCIPLES,
   examples: [
-    { id: "ex-soma-kesa", karlun: "soma kesa", english: "Who?", note: "A concept followed by kesa specifies the question.", status: "approved" },
-    { id: "ex-ko-kesa", karlun: "ko kesa", english: "What?", note: "A concept followed by kesa specifies the question.", status: "approved" },
-    { id: "ex-lora-kesa", karlun: "lora kesa", english: "Where?", note: "A concept followed by kesa specifies the question.", status: "approved" },
-    { id: "ex-tima-kesa", karlun: "tima kesa", english: "When?", note: "A concept followed by kesa specifies the question.", status: "approved" },
-    { id: "ex-kesa", karlun: "kesa", english: "How?", note: "Standalone kesa can mean how.", status: "approved" },
-    { id: "ex-lena-chips", karlun: "lena chips", english: "Please, chips / Please can I have chips?", note: "Lena is a polite request marker.", status: "approved" },
-    { id: "ex-lena-jump", karlun: "lena jump", english: "Please can you jump?", note: "An English word may be used when Karlun has no word for it.", status: "approved" },
-    { id: "ex-mi-ne-kema", karlun: "mi ne-kema chips", english: "I do not want chips.", note: "Negation applies to the individual word.", status: "approved" },
-    { id: "ex-possession-a", karlun: "John car", english: "John's car", note: "Possession is flexible.", status: "approved" },
-    { id: "ex-possession-b", karlun: "John's car", english: "John's car", note: "Possession is flexible.", status: "approved" },
-    { id: "ex-possession-c", karlun: "Johns car", english: "John's car", note: "Possession is flexible.", status: "approved" }
+    { id: "ex-svo", karlun: "mi kema chips", english: "I want chips.", note: "Default Subject → Verb → Object order." },
+    { id: "ex-action", karlun: "mi kesa sa", english: "I jump.", note: "Example of kesa used for an action." },
+    { id: "ex-lena-chips", karlun: "lena chips", english: "Please, chips / Please can I have chips.", note: "Lena can be used broadly for polite requests." },
+    { id: "ex-lena-jump", karlun: "lena jump", english: "Please can you jump.", note: "An English word can be used when Karlun does not have a word for it." },
+    { id: "ex-who", karlun: "soma kato", english: "Who?", note: "A concept followed by kato specifies the question." },
+    { id: "ex-what", karlun: "ko kato", english: "What?", note: "A concept followed by kato specifies the question." },
+    { id: "ex-where", karlun: "lora kato", english: "Where?", note: "A concept followed by kato specifies the question." },
+    { id: "ex-when", karlun: "tima kato", english: "When?", note: "A concept followed by kato specifies the question." },
+    { id: "ex-how", karlun: "kato", english: "How?", note: "Standalone kato." },
+    { id: "ex-karlun-kato", karlun: "karlun kato", english: "Confused about Karlun / not understanding a Karlun expression.", note: "A phrase that can be used when confused about Karlun." },
+    { id: "ex-possession-a", karlun: "John car", english: "John's car", note: "An acceptable possession format." },
+    { id: "ex-possession-b", karlun: "John's car", english: "John's car", note: "An acceptable possession format." },
+    { id: "ex-possession-c", karlun: "Johns car", english: "John's car", note: "An acceptable possession format." }
   ],
-  linguisticProfile: { influences: ["English (primary)", "Greek"], designGoal: "Words should be easy to say." },
   archivedWords: [],
   importHistory: []
 };
