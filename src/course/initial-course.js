@@ -18,7 +18,6 @@ const word = (term, glosses, unit, notes = "") => {
     wordClass: "flexible",
     modifierCompatibility: { sa: "unspecified", ne: "unspecified" },
     pluralCompatibility: "unspecified",
-    spellingVariant: false,
     status: "approved",
     sourceVersion: "2026-11-25"
   };
