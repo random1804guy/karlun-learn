@@ -55,7 +55,7 @@ export const INITIAL_WORDS = [
   word("soma", ["person", "people", "someone", "anyone", "human"], "people-things"),
   word("sako", ["good thing", "good stuff", "valuable", "worthwhile", "something worth keeping"], "people-things"),
   word("neko", ["bad thing", "bad stuff", "poor thing", "waste", "trash", "something to get rid of"], "people-things"),
-  word("ko", ["it", "thing", "stuff"], "people-things", "Also used as the pronoun for it."),
+  word("ko", ["it", "thing", "stuff"], "pronouns", "Also listed under People / Things / Value in the Master Sheet."),
 
   // 7. Knowledge
   word("dela", ["know", "understand", "knowledge", "smart", "intelligent", "aware", "knowledgeable"], "knowledge"),
