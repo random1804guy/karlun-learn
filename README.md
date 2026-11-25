@@ -54,12 +54,12 @@ The app caches its main interface and course files after the first successful lo
 
 ## First steps inside Karlun Learn
 
-The bundled course snapshot contains **53 approved words, 160 individually tracked meanings, 12 learning units and 7 approved grammar rules**. It uses the Karlun master-plan material available on 5 November 2026, including `sopo` = say / talk / ask. Newer master plans should be imported in the app rather than assumed to be present in this starter snapshot.
+The bundled course is built from the current Karlun Master Sheet supplied on 25 November 2026. It contains **53 unique approved words across 14 learning units**, the **7 grammar rules**, the question system, language notes, 10 general language principles and Master Sheet examples. The approved communication word is `sopa`.
 
 - **Home:** start a lesson and see your progress.
 - **Path:** work through the course units. A unit's play button starts a lesson using words from that unit.
 - **Words:** search the approved vocabulary and filter words you have or have not studied.
-- **Grammar:** read the seven approved rules and view approved examples.
+- **Grammar:** read the seven approved rules, Master Sheet notes, the question system, general language principles and examples.
 - **Review:** practise due meanings and revisit mistakes. Hearts never lock or limit lessons.
 - **Stats:** see XP, level, accuracy, streak and lesson history.
 - **Settings:** customise the theme, colours, text scale, motion, daily goal, lesson length, typed-answer frequency, app name and visible progress indicators. Export or restore a backup here too.
@@ -77,21 +77,20 @@ Your latest master plan remains the source of truth. In the app:
 The parser recognises simple entries in formats such as:
 
 ```text
-sopo = say / talk / ask
-bera / bura = because
+sopa = say / speak / talk / ask / tell
+bera = because
 salo: hello / greeting
 ```
 
 Multiple meanings on the right are kept as separate meaning records. Spelling variants can be written on the left separated by `/`. Headings and explanatory prose are not turned into vocabulary. Lines it cannot confidently parse are shown for review; the importer does not make up words.
 
-**Important:** the current importer updates vocabulary. It does not automatically rewrite grammar rules or examples from natural-language prose. Those remain unchanged during import. To change the bundled grammar/example data in this build, edit `INITIAL_GRAMMAR` or the `examples` array in `src/course/initial-course.js`, then rebuild/redeploy. Existing browsers keep their saved course data, so use an in-app backup before any manual data migration. A dedicated grammar/example editor can be added as a later feature without changing the vocabulary importer.
+**Important:** the importer updates vocabulary only. Grammar rules, language notes, general principles and examples remain pinned to the current Master Sheet. Older saved courses and restored backups are migrated to the current Master Sheet; only learning progress attached to an exact matching word and meaning is carried forward.
 
 ## Customise the learning experience
 
 - **Visual theme and preferences:** use Settings inside the app. Preferences are saved locally.
 - **Default look and app-wide settings:** edit `src/config/defaults.js`. `DEFAULT_SETTINGS` contains default colours, theme and display preferences. `DEFAULT_CONFIG` contains lesson length, exercise mix, XP/level values and review intervals. Values are validated before use.
-- **Course vocabulary and units:** edit `src/course/initial-course.js` for the bundled first-install course. The app's import tool is the preferred way to add vocabulary to your existing local course.
-- **Grammar and examples:** edit `INITIAL_GRAMMAR` and `INITIAL_COURSE.examples` in `src/course/initial-course.js`.
+- **Course vocabulary, units, grammar, language notes, principles and examples:** edit `src/course/initial-course.js`. This file is the bundled source of truth for the Master Sheet.
 - **Lesson generation and answer checking:** `src/core/lesson-engine.js` and `src/core/answer-checker.js`.
 - **XP, levels, streaks and mastery:** `src/progress/progression.js`.
 - **Review intervals:** `src/review/scheduler.js` and `DEFAULT_CONFIG.review.intervalsDays`.
@@ -102,7 +101,7 @@ Multiple meanings on the right are kept as separate meaning records. Spelling va
 - **Design system and responsive styling:** `styles.css`.
 - **Offline assets and cache version:** `sw.js`. When adding a new file needed offline, add it to `APP_SHELL` and increment `CACHE_NAME`.
 
-When changing code, run `npm run verify`. The automated checks cover parsing, stable IDs, repeat imports, archiving, answer checking, lesson generation, unit isolation, tentative grammar protection, review scheduling, mastery, XP, settings validation and backup validation.
+When changing code, run `npm run verify`. The automated checks cover parsing, stable IDs, repeat imports, archiving, answer checking, lesson generation, unit isolation, Master Sheet migration, review scheduling, mastery, XP, settings validation and backup validation.
 
 ## Data, privacy and limitations
 
@@ -112,7 +111,7 @@ When changing code, run `npm run verify`. The automated checks cover parsing, st
 - The review scheduler is a simple, transparent interval ladder, not FSRS yet.
 - Current lesson exercises are multiple-choice and typed translation in both directions. Matching, sentence-building, comprehension, conversation and a fuller grammar exercise system are future extensions; the app skips exercise types that do not have reliable approved content rather than inventing examples.
 - There is no listening, speaking, speech recognition or pronunciation scoring feature in this build.
-- The Grammar tab contains exactly the seven approved rules from the current Master Sheet; older tentative grammar ideas are not included.
+- The course vocabulary, grammar, language notes, general principles and examples are migrated from older saved versions to the current Master Sheet.
 - This is a tested foundation, not a promise of zero bugs or instant fluency. Browser and phone testing is still worthwhile after deployment.
 
 ## Project layout
