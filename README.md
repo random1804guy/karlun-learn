@@ -54,12 +54,12 @@ The app caches its main interface and course files after the first successful lo
 
 ## First steps inside Karlun Learn
 
-The bundled course snapshot contains **53 approved words, 160 individually tracked meanings, 12 learning units, 10 approved grammar rules and 1 clearly labelled tentative idea**. It uses the Karlun master-plan material available on 5 November 2026, including `sopo` = say / talk / ask. Newer master plans should be imported in the app rather than assumed to be present in this starter snapshot.
+The bundled course snapshot contains **53 approved words, 160 individually tracked meanings, 12 learning units and 7 approved grammar rules**. It uses the Karlun master-plan material available on 5 November 2026, including `sopo` = say / talk / ask. Newer master plans should be imported in the app rather than assumed to be present in this starter snapshot.
 
 - **Home:** start a lesson and see your progress.
 - **Path:** work through the course units. A unit's play button starts a lesson using words from that unit.
 - **Words:** search the approved vocabulary and filter words you have or have not studied.
-- **Grammar:** read the current approved rules, see tentative ideas clearly labelled, and view approved examples.
+- **Grammar:** read the seven approved rules and view approved examples.
 - **Review:** practise due meanings and revisit mistakes. Hearts never lock or limit lessons.
 - **Stats:** see XP, level, accuracy, streak and lesson history.
 - **Settings:** customise the theme, colours, text scale, motion, daily goal, lesson length, typed-answer frequency, app name and visible progress indicators. Export or restore a backup here too.
@@ -112,7 +112,7 @@ When changing code, run `npm run verify`. The automated checks cover parsing, st
 - The review scheduler is a simple, transparent interval ladder, not FSRS yet.
 - Current lesson exercises are multiple-choice and typed translation in both directions. Matching, sentence-building, comprehension, conversation and a fuller grammar exercise system are future extensions; the app skips exercise types that do not have reliable approved content rather than inventing examples.
 - There is no listening, speaking, speech recognition or pronunciation scoring feature in this build.
-- The possible yes/no question pattern involving `sopo sa ori ne` remains tentative and is not taught as confirmed grammar.
+- The Grammar tab contains exactly the seven approved rules from the current Master Sheet; older tentative grammar ideas are not included.
 - This is a tested foundation, not a promise of zero bugs or instant fluency. Browser and phone testing is still worthwhile after deployment.
 
 ## Project layout
