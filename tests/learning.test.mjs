@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { INITIAL_COURSE } from '../src/course/initial-course.js';
 import { generateLesson, getEligibleMeaningTargets } from '../src/core/lesson-engine.js';
 import { checkAnswer, normalizeAnswer } from '../src/core/answer-checker.js';
+import { getAcceptedSpellings } from '../src/core/utils.js';
 import { scheduleNextReview, isDue } from '../src/review/scheduler.js';
 import { createLearner, recordAnswer, finishLesson, getLevelProgress } from '../src/progress/progression.js';
 
@@ -32,9 +33,17 @@ test('unit lessons never pull vocabulary from another unit', () => {
   assert.ok(lesson.questions.every((question) => socialIds.has(question.wordId)));
 });
 
-test('tentative grammar is never used to generate a lesson', () => {
-  const lesson = generateLesson(INITIAL_COURSE, createLearner(), { questionCount: 20, random: fixedRandom });
-  assert.equal(lesson.questions.some((question) => question.prompt.includes('sopo sa ori ne')), false);
+test('the course contains only the seven approved grammar rules', () => {
+  assert.deepEqual(INITIAL_COURSE.grammar.map((rule) => rule.title), [
+    'Sentence Structure',
+    'Meaning Modifiers',
+    'Plurals',
+    'Possession',
+    'English Fallback',
+    'Capitalisation',
+    'Pronunciation'
+  ]);
+  assert.ok(INITIAL_COURSE.grammar.every((rule) => rule.approved === true));
 });
 
 test('review scheduling advances on success and resets after a miss', () => {
@@ -80,7 +89,7 @@ test('lesson completion applies configurable XP and levels', () => {
 
 test('secondary meanings unlock gradually after the first meaning is mastered', () => {
   const learner = createLearner();
-  const word = INITIAL_COURSE.words.find((item) => item.term === 'sopo');
+  const word = INITIAL_COURSE.words.find((item) => item.term === 'sopa');
   let eligible = getEligibleMeaningTargets(INITIAL_COURSE, learner);
   assert.equal(eligible.some((entry) => entry.word.id === word.id && entry.meaning.order === 2), false);
   learner.wordProgress[`${word.id}:${word.meanings[0].id}`] = { mastery: 60 };
@@ -90,16 +99,7 @@ test('secondary meanings unlock gradually after the first meaning is mastered', 
 });
 
 
-test('general ur/er spelling variants are accepted unless an entry opts out', () => {
-  const lessonCourse = {
-    words: [
-      { id: 'variant-word', term: 'burin', aliases: [], unitId: 'u', status: 'approved', meanings: [{ id: 'm1', text: 'test', status: 'approved', order: 1 }] },
-      { id: 'exception-word', term: 'beron', aliases: [], unitId: 'u', status: 'approved', spellingVariant: false, meanings: [{ id: 'm2', text: 'exception', status: 'approved', order: 1 }] }
-    ]
-  };
-  const lesson = generateLesson(lessonCourse, createLearner(), { questionCount: 2, typedQuestionRatio: 1, random: () => 0.9 });
-  const variants = lesson.questions.find((q) => q.wordId === 'variant-word');
-  const exception = lesson.questions.find((q) => q.wordId === 'exception-word');
-  assert.ok(variants.acceptedAnswers.includes('berin'));
-  assert.deepEqual(exception.acceptedAnswers, ['beron']);
+test('starter vocabulary accepts only its approved spelling', () => {
+  const word = INITIAL_COURSE.words.find((item) => item.term === 'tora');
+  assert.deepEqual(getAcceptedSpellings(word), ['tora']);
 });
