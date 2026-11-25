@@ -104,17 +104,55 @@ export const INITIAL_UNITS = [
 ];
 
 export const INITIAL_GRAMMAR = [
-  { id: "g-svo", title: "Default sentence order", text: "English-style subject → verb → object order is the default.", status: "approved", approved: true },
-  { id: "g-flex", title: "Flexible sentence order", text: "Other arrangements can be acceptable when the meaning remains clear. Clear meaning matters more than rigid order.", status: "approved", approved: true },
-  { id: "g-modifiers", title: "Meaning modifiers", text: "Only sa- and ne- are productive meaning modifiers. ta- is not a modifier. Apply modifiers only when compatible with the individual word.", status: "approved", approved: true },
-  { id: "g-plurals", title: "Plurals", text: "-s or -es may be used where appropriate. Compatibility and preferred forms can vary by word.", status: "approved", approved: true },
-  { id: "g-possession", title: "Possession", text: "Possession is flexible: John car, John's car and Johns car are all acceptable.", status: "approved", approved: true },
-  { id: "g-fallback", title: "English fallback", text: "English may be used when Karlun does not have an approved word for something.", status: "approved", approved: true },
-  { id: "g-spelling", title: "ur / er spelling variants", text: "ur and er are generally interchangeable with the same meaning unless the master plan specifies an exception.", status: "approved", approved: true },
-  { id: "g-adjectives", title: "Adjective order", text: "Adjectives follow English order and go before nouns.", status: "approved", approved: true },
-  { id: "g-negation", title: "Word-level negation", text: "Negation generally applies to individual words rather than the whole sentence; follow the spelling shown in the master plan.", status: "approved", approved: true },
-  { id: "g-compounds", title: "No automatic compounds", text: "Do not combine existing Karlun words to invent a new word or meaning. New words need independent approval.", status: "approved", approved: true },
-  { id: "g-yesno-tentative", title: "Possible yes/no question pattern", text: "A pattern like [question] sopo sa ori ne has been discussed, but it is not confirmed grammar and must not be taught as a rule.", status: "tentative", approved: false }
+  {
+    id: "g-sentence-structure",
+    title: "Sentence Structure",
+    text: "Karlun follows the same default sentence structure as English: Subject → Verb → Object. Example: “mi kema chips” = “I want chips.” This is the default structure, but other arrangements can be acceptable when the meaning remains clear.",
+    status: "approved",
+    approved: true
+  },
+  {
+    id: "g-meaning-modifiers",
+    title: "Meaning Modifiers",
+    text: "Only these are productive meaning modifiers: sa- = positive / stronger positive meaning; ne- = negative / opposite meaning. ta- is NOT a modifier. Examples: dela → nedela; sato → nesato.",
+    status: "approved",
+    approved: true
+  },
+  {
+    id: "g-plurals",
+    title: "Plurals",
+    text: "Plural nouns can use either -s or -es. Choose whichever works naturally with the word.",
+    status: "approved",
+    approved: true
+  },
+  {
+    id: "g-possession",
+    title: "Possession",
+    text: "Possession is flexible. All three forms are acceptable: “John car”, “John's car”, and “Johns car”. Use whichever works best. There is no single compulsory possessive format.",
+    status: "approved",
+    approved: true
+  },
+  {
+    id: "g-english-fallback",
+    title: "English Fallback",
+    text: "If Karlun does not have a word for something, use the English word. Karlun does not need a dedicated word for every English concept.",
+    status: "approved",
+    approved: true
+  },
+  {
+    id: "g-capitalisation",
+    title: "Capitalisation",
+    text: "The first word of a sentence can begin with either an uppercase or lowercase letter. Names and other proper nouns can use capital letters anywhere, including in the middle of a sentence. Ordinary words elsewhere in a sentence should use lowercase. Random capitalisation or mixed uppercase and lowercase letters within ordinary words is not valid. Valid: “Mi kesa sa”, “mi kesa sa”, “John kema chips”, “mi sopa John”. Invalid: “MI KesA sA”, “mi Kesa sa”, “mi kesa Sa”. Capitalisation does not change the meaning of a Karlun word.",
+    status: "approved",
+    approved: true
+  },
+  {
+    id: "g-pronunciation",
+    title: "Pronunciation",
+    text: "gu = ju. gue = ju (vibrate long).",
+    status: "approved",
+    approved: true
+  }
 ];
 
 export const INITIAL_COURSE = {
