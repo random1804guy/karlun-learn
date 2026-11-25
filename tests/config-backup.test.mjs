@@ -27,7 +27,8 @@ test('default app state contains independent course, learner, settings and confi
   one.settings.accent = '#000000';
   assert.notEqual(one.course.words.length, two.course.words.length);
   assert.notEqual(one.settings.accent, two.settings.accent);
-  assert.equal(two.course.words.some((word) => word.term === 'sopo'), true);
+  assert.equal(two.course.words.some((word) => word.term === 'sopa'), true);
+  assert.equal(two.course.words.some((word) => word.term === 'sopo'), false);
 });
 
 test('backup export round-trips and rejects malformed data', () => {
