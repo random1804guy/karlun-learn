@@ -1,4 +1,4 @@
-import { loadState, saveState, getPersistenceMode } from "./storage/store.js";
+import { loadState, saveState, getPersistenceMode, migrateCourseAndLearner } from "./storage/store.js";
 import { DEFAULT_CONFIG, validateSettings, validateConfig } from "./config/defaults.js";
 import { generateLesson } from "./core/lesson-engine.js";
 import { checkAnswer } from "./core/answer-checker.js";
@@ -165,9 +165,16 @@ function renderWords() {
   const list = filtered.map((word) => {
     const learned = word.meanings.filter((meaning) => progressFor(word, meaning)).length;
     const aliases = (word.aliases ?? []).length ? `<small class="word-alias">Also: ${safe((word.aliases ?? []).join(", "))}</small>` : "";
-    return `<article class="word-row"><div class="word-term">${safe(word.term)}</div><div class="word-meaning"><strong>${safe(word.meanings[0]?.text ?? "")}</strong><span>${word.meanings.slice(1, 4).map((m) => safe(m.text)).join(" · ")}</span>${aliases}</div><div class="word-mastery"><span>${learned}/${word.meanings.length}</span><i class="mastery-track"><b style="width:${word.meanings.length ? learned / word.meanings.length * 100 : 0}%"></b></i></div></article>`;
+    return `<article class="word-row"><div class="word-term">${safe(word.term)}</div><div class="word-meaning"><strong>${safe(word.meanings[0]?.text ?? "")}</strong><span>${word.meanings.slice(1, 4).map((m) => safe(m.text)).join(" · ")}</span>${aliases}${word.notes ? `<small class="word-alias">${safe(word.notes)}</small>` : ""}</div><div class="word-mastery"><span>${learned}/${word.meanings.length}</span><i class="mastery-track"><b style="width:${word.meanings.length ? learned / word.meanings.length * 100 : 0}%"></b></i></div></article>`;
   }).join("");
-  const grammar = state.course.grammar.map((rule) => `<article class="grammar-row"><div><strong>${safe(rule.title)}</strong><p>${safe(rule.text)}</p></div><span class="status-chip ${rule.approved ? "approved" : "tentative"}">${rule.approved ? "Approved" : "Tentative"}</span></article>`).join("");
+  const grammar = [
+    `<article class="grammar-row"><div><strong>Grammar Rules</strong></div></article>`,
+    ...state.course.grammar.map((rule) => `<article class="grammar-row"><div><strong>${safe(rule.title)}</strong><p>${safe(rule.text)}</p></div></article>`),
+    `<article class="grammar-row"><div><strong>Master Sheet Notes</strong></div></article>`,
+    ...(state.course.languageNotes ?? []).map((note) => `<article class="grammar-row"><div><strong>${safe(note.title)}</strong><p>${safe(note.text)}</p></div></article>`),
+    `<article class="grammar-row"><div><strong>General Language Principles</strong></div></article>`,
+    ...(state.course.principles ?? []).map((principle) => `<article class="grammar-row"><div><p>${safe(principle)}</p></div></article>`)
+  ].join("");
   const examples = (state.course.examples ?? []).map((example) => `<article class="example-row"><div><strong>${safe(example.karlun)}</strong><span>${safe(example.english)}</span></div><small>${safe(example.note ?? "")}</small></article>`).join("");
   shell(`<section class="page-intro"><p class="eyebrow">COURSE LIBRARY</p><h1>Words & grammar</h1><p class="subheading">Only approved Karlun vocabulary is used for lessons.</p></section>
     <div class="tabs"><button class="tab ${wordTab === "words" ? "active" : ""}" data-word-tab="words">Vocabulary <span>${words.length}</span></button><button class="tab ${wordTab === "grammar" ? "active" : ""}" data-word-tab="grammar">Grammar <span>${state.course.grammar.length}</span></button></div>
@@ -244,7 +251,7 @@ function renderImport() {
       <p class="tiny-note">Grammar is not automatically changed by this vocabulary importer yet. Your existing grammar rules will remain intact.</p>
       <div class="backup-actions"><button class="button button-primary" data-action="apply-import" ${result.diff.canApply ? "" : "disabled"}>Apply vocabulary changes</button><button class="button button-secondary" data-action="cancel-import">Cancel</button></div>
     </section>` : ""}
-    <p class="quiet-note">Tip: entries such as <code>sopo = say / talk / ask</code> are recognised. Plain-text headings and explanatory notes can remain in your plan.</p>`);
+    <p class="quiet-note">Tip: entries such as <code>sopa = say / speak / talk / ask / tell</code> are recognised. Plain-text headings and explanatory notes can remain in your plan.</p>`);
   const textarea = document.querySelector("#master-plan");
   textarea?.addEventListener("input", () => { importRaw = textarea.value; importPreview = null; });
   document.querySelector("#archive-missing")?.addEventListener("change", (event) => { importArchiveMissing = event.target.checked; importPreview = null; });
@@ -413,7 +420,8 @@ async function restoreBackup(file) {
   if (!result.valid) { showToast(result.error, "error"); return; }
   const active = result.state.course.words.length;
   if (!confirm(`Restore this backup? It contains ${active} active words and will replace the current local course, progress and settings.`)) return;
-  state = result.state;
+  const migrated = migrateCourseAndLearner(result.state.course, result.state.learner);
+  state = { ...result.state, course: migrated.course, learner: migrated.learner };
   state.settings = validateSettings(state.settings);
   state.config = validateConfig(state.config);
   await persist();
